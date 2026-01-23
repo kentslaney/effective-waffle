@@ -138,131 +138,6 @@
         })
 
         // sourcing(#)
-        // ex2
-        const ex2el = document.getElementById("ex2")
-        const ex2cols = document.querySelector("#ex2 .arrows")
-        const ex2carry = document.querySelector("#ex2 .dots")
-        const ex2style = window.getComputedStyle(ex2carry)
-        const ex2timex = parseFloat(ex2style.getPropertyValue("--timing-x"))
-        const ex2timey = parseFloat(ex2style.getPropertyValue("--timing-y"))
-        function ex2digit() {
-          const col = ex2cols.appendChild(document.createElement("div"))
-          return col;
-        }
-        const ex2resize = new ResizeObserver(entries => entries.map(entry => {
-          ex2el.style.setProperty("--cols", entry.contentRect.width / ex1sizing)
-        }))
-        ex2resize.observe(ex2cols)
-        let ex2init = "", ex2val = "", ex2zeros = 0, ex2cover
-        function ex2(b3) {
-          window.cancelAnimationFrame(ex2warmup)
-          window.clearTimeout(ex2cooldown)
-          ex2cooldown = undefined
-          for (let i of ex2timeouts) window.clearTimeout(i)
-          ex2timeouts.clear()
-          while (ex2carry.children.length > 1)
-            ex2carry.removeChild(ex2carry.lastElementChild)
-          const x = ex2val = b322(ex2init = b3)
-          ex2zeros = 0
-          ex2cover = ex1cover - 1
-          while (ex2cols.children.length < ex2cover) ex2digit()
-          while (ex2cols.children.length < x.length) ex2digit()
-          ;[...ex2cols.children].forEach((y, i) => {
-            if (i < x.length && x[x.length - 1 - i] === "1")
-              y.classList.add("flip")
-            else y.classList.remove("flip")
-          })
-          ex2el.classList.remove("started")
-          ex2el.style.removeProperty("--zeros")
-          ex2el.style.removeProperty("--min-bound")
-          ex2el.style.removeProperty("--max-bound")
-          ex2play.classList.remove("disabled")
-        }
-        function ex2carrier() {
-          const col = ex2carry.appendChild(document.createElement("div"))
-          for (let i = 2; i >= 0; i--) {
-            const dot = col.appendChild(document.createElement("div"))
-          }
-          col.style.setProperty("--active", "1")
-          col.classList.add("active")
-          return col
-        }
-        let ex2timeouts = new Set(), ex2cooldown, ex2warmup;
-        document.querySelector("#ex2 .reset").addEventListener("click", e => {
-          ex2(ex2init)
-        })
-        const ex2run = auto => {
-          if (ex2cooldown !== undefined) return
-          const last = ex2carry.lastElementChild
-          const carrier = ex2carrier()
-          const prev = ex2val, zinit = ex2zeros
-          const [update, shift] = b2rtl(ex2val)
-          let carry = 1
-          ex2val = update
-          const znext = ex2zeros += shift
-          ex2el.classList.add("started")
-          while (ex2cols.children.length < ex2cover + ex2zeros) ex2digit()
-          function goto(pos) {
-            if (pos >= update.length + znext) {
-              const full = parseInt(
-                window.getComputedStyle(ex2el).getPropertyValue("--last-full"))
-              if (pos === full) {
-                carrier.classList.add("done")
-                const timeout2 = window.setTimeout(() => {
-                  ex2timeouts.delete(timeout2)
-                  ex2carry.removeChild(carrier)
-                }, ex2timex * 1000)
-                ex2timeouts.add(timeout2)
-                return
-              }
-            }
-            ex2warmup = undefined
-            while (ex2cols.children.length <= pos) ex2digit()
-            carrier.style.setProperty("--digit", pos)
-            if (last.previousElementSibling === null)
-              ex2el.style.setProperty("--max-bound", pos)
-            const timeout0 = window.setTimeout(() => {
-              ex2timeouts.delete(timeout0)
-              carrier.style.setProperty("--bound", pos)
-              if (carrier.nextElementSibling === null)
-                ex2el.style.setProperty("--min-bound", pos)
-              if (carry === 1) {
-                ex2cols.children[pos].classList.toggle("flip")
-              }
-              const cur = prev[prev.length - 1 - pos + zinit] === "1"
-              if (cur * 2 !== carry) {
-                carry += cur ? 1 : -1
-                carrier.style.setProperty("--active", carry)
-                const timeout1 = window.setTimeout(() => {
-                  ex2timeouts.delete(timeout1)
-                  goto(pos + 1)
-                }, ex2timey * 1000)
-                ex2timeouts.add(timeout1)
-              } else {
-                goto(pos + 1)
-              }
-            }, ex2timex * 1000)
-            ex2timeouts.add(timeout0)
-          }
-          ex2warmup = window.requestAnimationFrame(() =>
-            ex2warmup = window.requestAnimationFrame(() => {
-              ex2el.style.setProperty("--zeros", znext)
-              goto(znext)
-            }
-          ))
-          const [ex2lagx, ex2lagy] = b2time(prev, shift, update)
-          ex2cooldown = window.setTimeout(() => {
-            ex2cooldown = undefined;
-            if (auto) ex2run(true)
-          }, (ex2timex * ex2lagx + ex2timey * ex2lagy) * 1000)
-        }
-        const ex2play = document.querySelector("#ex2 .play")
-        ex2play.addEventListener("click", e => ex2run(false))
-        document.querySelector("#ex2 .ff").addEventListener("click", e => {
-          ex2play.classList.add("disabled")
-          ex2run(true)
-        })
-
         // ex1
         const ex1el = document.getElementById("ex1")
         const ex1cols = document.querySelector("#ex1 .dots")
@@ -429,7 +304,7 @@
         })
 
         // ex0
-        const ex0nt = x => { ex1(x); ex2(x) }
+        const ex0nt = x => { ex1(x) }
         const e0b10 = document.getElementById("ex0base10")
         const e0b02 = document.getElementById("ex0base02")
         const e0b03 = document.getElementById("ex0base03")
@@ -492,11 +367,7 @@
           ex0(x)
         }, { "passive": true })
         const init = e0b03.value || e0b03.placeholder
-        try {
-          ex0(init)
-        } finally {
-          ex2(init)
-        }
+        ex0(init)
       })
     </script>
   </head>
@@ -575,17 +446,6 @@
       <input type="number" value="21" placeholder="21" id="ex0base03">
       </input>
       \(_3\)
-
-      <div id="ex2">
-        <div class="play"></div>
-        <div class="ff"></div>
-        <div class="eos"></div>
-        <div class="reset"></div>
-        <div class="dots">
-          <div class="active"><div></div><div></div><div></div></div>
-        </div>
-        <div class="arrows"></div>
-      </div>
 
       <div id="ex1">
         <div class="play"></div>
@@ -674,7 +534,7 @@
         initial-value: 1;
       }
 
-      #ex1, #ex2 {
+      #ex1 {
         --timing-x: 0.5;
         --timing-y: 0.5;
         --timing-x-s: calc(var(--timing-x) * 1s);
@@ -700,13 +560,6 @@
         syntax: '<number>';
         inherits: true;
         initial-value: 0;
-      }
-
-      #ex2 {
-        /* not scrolling to follow carries since the number of zeros matters */
-        --scroll: var(--zeros);
-        --last-full: calc(round(down, var(--scroll) + var(--cols)));
-        --overflow: calc(max(0, sign(var(--max-bound) + 1 - var(--last-full))));
       }
 
       .play {
@@ -790,10 +643,6 @@
         z-index: 1;
       }
 
-      #ex2 .ff, #ex2 .reset {
-        top: 4em;
-      }
-
       .started .reset {
         display: initial;
       }
@@ -821,7 +670,7 @@
         transform: rotate(-30deg);
       }
 
-      #ex1 .arrows, #ex2 .dots {
+      #ex1 .arrows {
         --digit: -1;
         --bound: -1;
         --lag: 0;
@@ -842,17 +691,9 @@
         transition: left var(--timing-x-s), transform var(--timing-y-s);
       }
 
-      #ex2 .arrows > div {
-        transition: transform var(--timing-y-s);
-      }
-
       #ex1 .arrows > div {
         left: calc(4em + 3em * max(-1, var(--digit) - var(--scroll)));
         position: absolute;
-      }
-
-      #ex2 .arrows > div {
-        display: inline-block;
       }
 
       .arrows > div {
@@ -898,45 +739,6 @@
         overflow-x: hidden;
       }
 
-      #ex2 .arrows {
-        margin: 3em;
-        text-wrap: nowrap;
-        overflow-x: hidden;
-        text-align: right;
-        direction: rtl;
-      }
-
-      #ex2 .dots {
-        position: absolute;
-        right: 1em;
-        top: 0;
-      }
-
-      #ex2 .dots > div:first-child {
-        --active: 1;
-      }
-
-      #ex2 .dots > div:not(:first-child) {
-        position: absolute;
-        top: 0;
-        left: calc(-3em - 3em * max(-1, var(--digit) - var(--scroll)));
-        transition: left var(--timing-x-s);
-      }
-
-      #ex2 .dots > div:not(:first-child).done {
-        left: calc(-2em - 3em * var(--cols));
-      }
-
-      #ex1 .dots > div:first-child {
-        margin-left: calc(var(--scroll) * -3em);
-        transition: margin-left var(--timing-x-s);
-      }
-
-      #ex2 .arrows > div:first-child {
-        margin-right: calc(1em + var(--scroll) * -3em);
-        transition: transform var(--timing-y-s), margin-right var(--timing-x-s);
-      }
-
       /* https://stackoverflow.com/a/32993828 */
       #ex1 .dots > div {
         --error-opacity: 0.2;
@@ -954,12 +756,7 @@
         pointer-events: auto;
       }
 
-      #ex2 .arrows > div {
-        margin: 1em 1em 1em 0;
-        text-align: initial;
-      }
-
-      .dots > .active::after, .eos {
+      .dots > .active::after {
         content: '';
         position: absolute;
         width: 2em;
@@ -970,38 +767,6 @@
         background: green;
         border-radius: 100%;
         pointer-events: auto;
-      }
-
-      .eos {
-        transition: initial;
-        top: 7em;
-        opacity: 0.5;
-        z-index: calc(-1 + 3 * var(--overflow));
-      }
-
-      .eos::before, .eos::after {
-        content: '';
-        position: absolute;
-        background: #fff;
-        width: calc(0.2em / sqrt(2));
-        height: 1.2em;
-        margin: 0.4em calc(1em - 0.1em / sqrt(2));
-        transform: rotate(45deg);
-      }
-
-      .eos::after {
-        transform: rotate(-45deg);
-      }
-
-      #ex2::before {
-        content: '';
-        background: #fff;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 3em;
-        z-index: 1;
-        height: calc(6.5em + 3em * var(--overflow));
       }
 
       #ex1 .dots > div::before {
@@ -1034,16 +799,8 @@
         overflow-x: initial !important;
       }
 
-      #ex2.sourcing {
-        padding-top: 1px;
-      }
-
-      #ex2.sourcing .arrows {
-        transform: translateY(-1px);
-      }
-
       .sourcing::after {
-        content: 'kentslaney.github.io/ideal-bassoon';
+        content: 'kentslaney.github.io/effective-waffle';
         position: absolute;
         font-size: 2em;
         transform: translate(2em, -0.5em);
