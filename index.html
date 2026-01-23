@@ -379,8 +379,8 @@
           a_0&\in\mathbb{N}+1=\{1,2,3,\dots\}\\
           a_{k+1}&= \left\{
             \begin{array}{rl}
-              a_k \div 2 & \quad2\mid a_k \\
-              3a_k+1 & \quad2\nmid a_k
+              a_k \div 2 & \quad a_k \equiv 0 \pmod 2 \\
+              3a_k+1 & \quad a_k \equiv 1 \pmod 2
             \end{array}
           \right.
         \end{align}
@@ -390,50 +390,7 @@
         \end{equation}
       </div>
       <hr>
-
-      The goal of this page is to make the Collatz sequence's mapping easier to
-      think about. The lowest-context, longhand formulation is in binary.
-      Repeatedly:
-      <ol>
-        <li>Remove trailing 0s (removes factors of 2 until odd)</li>
-        <li>Append 1 to the end of the number (\(=2a_k+1\))</li>
-        <li>Add the result to the previous number (\(=3a_k+1\))</li>
-      </ol>
-      For example (via
-      <a href="https://en.wikipedia.org/w/index.php?title=Collatz_conjecture&oldid=1298684967#Example">
-        Wikipedia
-      </a>), using \(7=111_2\)
-<pre>
-         111         7
-        <u>111<b>1</b></u>
-       1011<s>0</s>        11
-      <u>1011<b>1</b></u>
-     10001<s>0</s>         17
-    <u>10001<b>1</b></u>
-    1101<s>00</s>          13
-   <u>1101<b>1</b></u>
-  101<s>000</s>             5
- <u>101<b>1</b></u>
-1<s>0000</s>                1
-</pre>
-      The rows in this method correspond to steps on odds, with evens grouped
-      into removed columns. The process can also be rephrased in order to be
-      convenient for a state-machine instead of manual computation. Above, the
-      result depends on the (hidden) carry from the previous digit, the digit
-      from step 1, and the digit from step 2. In an adder, the carry is the
-      result's overflow from modulo 2, but step 2 can be hidden by changing the
-      carry to mean the overflow plus the input digit. In this case, only the
-      number and carry are being added and the carry is 0, 1, or 2, starting
-      with 1 from the 1 appended in step 2.
-      <br /><br />
-      While base 2 simplifies division, base 3 simplifies the addition. Dividing
-      by 2 in base 3 is most familiar as long division, where the remainder
-      switches between 0 and 1 at each 1 digit in the input. If the input ends
-      with a remainder, appending a 1 to the input accounts for \(3a_k + 1\) and
-      appends a 2 to the output. Below, in the text format for the base 3
-      process, digits with an incoming remainder are denoted by an underline. In
-      contrast to base 2, the rows in this version correspond to steps on evens,
-      with steps on odds adding columns.
+      <a href="https://kentslaney.github.io/ideal-bassoon">prev</a>
       <br /><br />
 
       Using \(a_0=\)
@@ -456,16 +413,6 @@
       </div>
 
       <pre id="ex0"></pre>
-
-      These 3 representations are actually presented in reverse order of
-      creation (GitHub releases for verified timestamps).
-      <!-- https://archive.ph/0oOOV -->
-      <a href="https://cdsmithus.medium.com/01d44cdfbe5a">
-        This article by Chris Smith
-      </a>
-      was a part of the process in going from the base 3 visual to base 2. The
-      repo name/URL is the random one suggested by GitHub to avoid
-      <code>collatz(-new)*</code>.
     </div>
     <style>
       .content {
@@ -526,6 +473,14 @@
       #ex0 {
         max-width: 100%;
         overflow-x: scroll;
+        overflow-y: hidden;
+        line-height: 1.15em;
+      }
+
+      #ex0 u {
+        text-decoration-thickness: 0.1em;
+        text-underline-offset: 0.1em;
+        overflow-y: visible;
       }
 
       @property --cols-cover {
@@ -737,6 +692,11 @@
         margin-left: 3em;
         text-wrap: nowrap;
         overflow-x: hidden;
+      }
+
+      #ex1 .dots > div:first-child {
+        margin-left: calc(var(--scroll) * -3em);
+        transition: margin-left var(--timing-x-s);
       }
 
       /* https://stackoverflow.com/a/32993828 */
