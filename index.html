@@ -142,6 +142,7 @@
         const ex1el = document.getElementById("ex1")
         const ex1cols = document.querySelector("#ex1 .dots")
         const ex1carry = document.querySelector("#ex1 .arrows")
+        const ex1template = ex1carry.firstElementChild
         const ex1style = window.getComputedStyle(ex1carry)
         const ex1timex = parseFloat(ex1style.getPropertyValue("--timing-x"))
         const ex1timey = parseFloat(ex1style.getPropertyValue("--timing-y"))
@@ -212,6 +213,8 @@
           ;[...ex1cols.children].forEach(y => {
             y.style.removeProperty("--active")
             y.classList.remove("active")
+            y.classList.remove("parity-init")
+            y.classList.remove("parity-alt")
           })
           x.split("").map((y, i) => {
             ex1cols.children[i].style.setProperty("--active", y)
@@ -226,6 +229,7 @@
           ex1cols.classList.remove("zero")
           ex1cols.classList.remove("skips")
           ex1play.classList.remove("disabled")
+          ex1template.classList.add("parity-init")
         }
         let ex1timeouts = new Set(), ex1cooldown, ex1warmup;
         document.querySelector("#ex1 .reset").addEventListener("click", e => {
@@ -242,9 +246,16 @@
           const next = ex1next = b3ltr(ex1val)
           const zlo = prev.match(/^0*/)[0].length
           const zhi = update.match(/^0*/)[0].length
+          const parity = ex1template.classList.contains("parity-init")
           ex1el.classList.add("started")
           carrier.style.setProperty("--digit", -1)
           carrier.style.setProperty("--bound", -1)
+          if (parity) {
+            carrier.classList.add("parity-init")
+            ex1template.classList.remove("parity-init")
+          } else {
+            ex1template.classList.add("parity-init")
+          }
           function goto(pos) {
             ex1warmup = undefined
             while (ex1cols.children.length <= pos) ex1digit()
@@ -275,6 +286,8 @@
                   }, ex1timey * 1000)
                   ex1timeouts.add(timeout1)
                 } else {
+                  ex1cols.children[pos].classList.add(
+                    parity ? "parity-init" : "parity-alt")
                   ex1carry.removeChild(carrier)
                 }
               } else if (pos < update.length - 1) {
@@ -375,18 +388,15 @@
     <div class="content">
       <div class="conjecture">
         For the sequence
-        \begin{align}
-          a_0&\in\mathbb{N}+1=\{1,2,3,\dots\}\\
-          a_{k+1}&= \left\{
-            \begin{array}{rl}
-              a_k \div 2 & \quad a_k \equiv 0 \pmod 2 \\
-              3a_k+1 & \quad a_k \equiv 1 \pmod 2
-            \end{array}
-          \right.
-        \end{align}
-        the Collatz conjecture states that
         \begin{equation}
-          \forall\,a_0\,\exists\,k\ \text{such that}\ a_k=1
+          a_{k+1}=\begin{cases}
+              a_k/2 & \text{if } a_k \equiv 0 \pmod 2, \\
+              3a_k+1 & \text{if } a_k \equiv 1 \pmod 2.
+          \end{cases}
+        \end{equation}
+        The Collatz conjecture is:
+        \begin{equation}
+          \forall\,a_0\in\mathbb{N}+1=\{1,2,3,\dots\}\\\,\exists\,k\ \text{such that}\ a_k=1
         \end{equation}
       </div>
       <hr>
@@ -415,6 +425,16 @@
       <pre id="ex0"></pre>
     </div>
     <style>
+      :root {
+        --red: red;
+        --green: green;
+        --blue: #007aff;
+        --aaa: #ccc;
+        --blend-mode: screen;
+        --parity-init: var(--red);
+        --parity-alt: var(--blue);
+      }
+
       .content {
         --max-width-em: 40;
         max-width: calc(var(--max-width-em) * 1em);
@@ -444,7 +464,7 @@
 
       input[type=number] {
         font-family: inherit;
-        border-color: #aaa;
+        border-color: var(--aaa);
         border-width: 0 0 0.2em 0;
         outline: 0;
         text-align: right;
@@ -452,7 +472,7 @@
       }
 
       input[type=number]:focus {
-        border-color: #007aff;
+        border-color: var(--blue);
       }
 
       /* https://stackoverflow.com/a/4298216/3476782 */
@@ -523,13 +543,13 @@
         top: 1em;
         left: 1em;
         position: absolute;
-        background: #007aff;
+        background: var(--blue);
         border-radius: 100%;
         z-index: 1;
       }
 
       .play.disabled {
-        background: #aaa;
+        background: var(--aaa);
       }
 
       .play::before {
@@ -560,7 +580,7 @@
         top: 7em;
         left: 1em;
         position: absolute;
-        background: #007aff;
+        background: var(--blue);
         border-radius: 100%;
         z-index: 1;
       }
@@ -586,7 +606,7 @@
       }
 
       .reset {
-        --back: red;
+        --back: var(--red);
         width: 2em;
         height: 2em;
         top: 7em;
@@ -657,6 +677,13 @@
         top: 4em;
         z-index: 1;
         transform: rotate(0deg);
+        border-radius: 100%;
+        mix-blend-mode: var(--blend-mode);
+        background: var(--parity-alt);
+      }
+
+      .arrows > div.parity-init {
+        background: var(--parity-init);
       }
 
       #ex1 .arrows > div:first-child {
@@ -710,7 +737,7 @@
       .dots > div > div {
         width: 2em;
         height: 2em;
-        background: #aaa;
+        background: var(--aaa);
         border-radius: 100%;
         margin: 1em 0 1em 1em;
         pointer-events: auto;
@@ -724,7 +751,7 @@
         left: 1em;
         top: calc(7em - var(--active) * 3em);
         transition: top var(--timing-y-s);
-        background: green;
+        background: var(--green);
         border-radius: 100%;
         pointer-events: auto;
       }
@@ -736,9 +763,19 @@
         top: 0.5em;
         bottom: 0.5em;
         left: 0.5em;
-        z-index: -1;
-        background: red;
+        z-index: -2;
+        background: var(--red);
         opacity: 0;
+      }
+
+      #ex1 .dots > .parity-init::before {
+        background: var(--parity-init);
+        opacity: 1;
+      }
+
+      #ex1 .dots > .parity-alt::before {
+        background: var(--parity-alt);
+        opacity: 1;
       }
 
       #ex1 .dots > div:not(.active)::before {
