@@ -131,13 +131,43 @@
         }).reduce(([a, b], c) => [a + c, Math.max(b, a + c)], [0, 0])[1]]
       }
 
+      function b3parities(b10) {
+        let x = b3enc(b10), len = x.length, seq = []
+        for (let i = 0; i < len; i++)
+          seq.push(-1)
+        for (let i = 1; b3dec(x) > 1; i = +!i) {
+          x = b3ltr(x)
+          if (x.length > len) {
+            len = x.length
+            seq.push(i)
+          }
+        }
+        return seq
+      }
+
+      function ex3parities(b10) {
+        const line = document.createElement("div")
+        const seq = b3parities(b10)
+        seq.forEach(x =>
+          line.appendChild(document.createElement("span")).classList.add(
+            x === -1 ? "parity-null" : x === 0 ? "parity-alt" : "parity-init"))
+        line.classList.add(
+          seq[seq.length - 1] === 0 ? "parity-alt" : "parity-init")
+        b10.toString().split("").forEach((x, i) => line.children[i].innerText = x)
+        return line
+      }
+
       window.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("a").forEach(el => {
           if (el.childNodes.length === 1 && el.firstElementChild === null)
             el.innerText = el.innerText.trim()
         })
 
-        // sourcing(#)
+        // ex3
+        const ex3el = document.getElementById("ex3")
+        for (let i = 2; i < 100; i++)
+          ex3el.appendChild(ex3parities(i))
+
         // ex1
         const ex1el = document.getElementById("ex1")
         const ex1cols = document.querySelector("#ex1 .dots")
@@ -341,7 +371,7 @@
               carry.slice(0, -1).concat([carry[carry.length - 1] + eol]) :
               i === lines.length - 1 ? carry.concat([eol]):
               carry.slice(0, -1).concat(
-                [carry[carry.length - 1] + " ", eol.slice(1)])
+                [carry[carry.length - 1] + (i % 2 ? "b" : "r"), eol.slice(1)])
           }).reduce((a, b) => {
             if (b.length === 1) return a + b[0]
             ex0el.appendChild(document.createTextNode(a + b[0]))
@@ -400,9 +430,6 @@
         \end{equation}
       </div>
       <hr>
-      <a href="https://kentslaney.github.io/ideal-bassoon">prev</a>
-      <br /><br />
-
       Using \(a_0=\)
       <input type="number" value="7"  placeholder="7"  id="ex0base10">
       </input>
@@ -423,6 +450,7 @@
       </div>
 
       <pre id="ex0"></pre>
+      <pre id="ex3"></pre>
     </div>
     <style>
       :root {
@@ -495,6 +523,7 @@
         overflow-x: scroll;
         overflow-y: hidden;
         line-height: 1.15em;
+        display: none;
       }
 
       #ex0 u {
@@ -809,6 +838,22 @@
         height: 100%;
         background: inherit;
         left: -8em;
+      }
+
+      #ex3 span:empty::before {
+        content: '\00a0';
+      }
+
+      #ex3 .parity-null {
+        background: var(--aaa);
+      }
+
+      #ex3 .parity-init {
+        background: var(--parity-init);
+      }
+
+      #ex3 .parity-alt {
+        background: var(--parity-alt);
       }
     </style>
   </body>
