@@ -135,7 +135,7 @@
         let x = b3enc(b10), len = x.length, seq = []
         for (let i = 0; i < len; i++)
           seq.push(-1)
-        for (let i = 1; b3dec(x) > 1; i = +!i) {
+        for (let i = 1; b3dec(x) > 1 || seq[seq.length - 1] === -1; i = +!i) {
           x = b3ltr(x)
           if (x.length > len) {
             len = x.length
@@ -153,7 +153,8 @@
             x === -1 ? "parity-null" : x === 0 ? "parity-alt" : "parity-init"))
         line.classList.add(
           seq[seq.length - 1] === 0 ? "parity-alt" : "parity-init")
-        b10.toString().split("").forEach((x, i) => line.children[i].innerText = x)
+        b10.toString().split("").forEach((x, i) =>
+          line.children[i].innerText = x)
         return line
       }
 
@@ -165,7 +166,7 @@
 
         // ex3
         const ex3el = document.getElementById("ex3")
-        for (let i = 2; i < 100; i++)
+        for (let i = 1; i < 100; i++)
           ex3el.appendChild(ex3parities(i))
 
         // ex1
@@ -426,10 +427,15 @@
         \end{equation}
         The Collatz conjecture is:
         \begin{equation}
-          \forall\,a_0\in\mathbb{N}+1=\{1,2,3,\dots\}\\\,\exists\,k\ \text{such that}\ a_k=1
+          \forall\,a_0\in\mathbb{N}+1=\{1,2,3,\dots\}\,
+          \exists\,k\ \text{such that}\ a_k=1
         \end{equation}
       </div>
       <hr>
+      The 4-2-1 loop makes a length 2 cycle of arrows, meaning that the limiting
+      behavior can end up with one of two phases. Below, the columns are colored
+      according to the parity of the arrow that created them.
+      <br /><br />
       Using \(a_0=\)
       <input type="number" value="7"  placeholder="7"  id="ex0base10">
       </input>
